@@ -2,59 +2,62 @@ import dash
 import dash_core_components as dcc
 import dash_html_components as html
 import plotly.graph_objs as go
+import requests 
+import urllib.request
 
-########### Define your variables ######
+################ DEF TO INPUT VIDEO ID AND OUTPUT RESPONSE CODE AND VIEW COUNT
+ 
+def  YT_API_pull(video_id):
+  # open a connection to a URL using urllib
+  webUrl ='https://www.googleapis.com/youtube/v3/videos?key=AIzaSyBInsFf7pyAxa1qEffe9CrSGNOcueNCqmw&fields=items(statistics(viewCount))&part=snippet,statistics&id=' + video_id 
+  webUrl  = urllib.request.urlopen(webUrl)
+ 
+  #get the result code and print it
+  #print ("result code: " + str(webUrl.getcode()))
+  rep_code = webUrl.getcode()
+ 
+  # read the data from the URL and print it
+  data = webUrl.read()
+  #print (data)
+ 
+  data = data.decode("utf-8")
+ 
+  #By brute force, view count number in the response will start position: pos(viewCount) + 13
+  result = data.find('viewCount') 
+  #print ("Substring 'viewCount ' found at index:", result ) 
+ 
+  #output number
+  num = ''
+  i = result + 13
+  while(data[i] != '"'):
+    num = num + data[i]
+    i += 1
+ 
+  num = int(num)
+ 
+ 
+  return rep_code, num
 
-myheading = "Baseball Stats from the 1950s"
-mytitle = "Batting Averages for 3 Hall of Famers"
-x_values = ['1954', '1955', '1956', '1957', '1958', '1959']
-y1_values = [345, 356, 345, 388, 328, 254]
-y2_values = [300, 306, 353, 365, 304, 285]
-y3_values = [280, 314, 328, 322, 326, 355]
-color1 = '#fc9403'
-color2 = '#0307fc'
-color3 = '#9003fc'
-name1 = 'Ted Williams'
-name2 = 'Mickey Mantle'
-name3 = 'Hank Aaron'
-tabtitle = 'baseball'
-sourceurl = 'https://www.baseball-reference.com'
-githublink = 'https://github.com/austinlasseter/dash-linechart-example'
+########## lect number and view count array
+ 
+lect_no = ['V0', 'V1', 'V2 P1', 'V2 P2', 'V3 P1', 'V3 P2', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 
+'V16', 'V17', 'V18', 'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25']
 
-########### Set up the chart
+view_ct = [YT_API_pull(video_id = 'Bo7iVSs5z6s')[1], YT_API_pull(video_id = 'hYdZjXceBYg')[1], YT_API_pull(video_id = '3w-_NqFJW30')[1],
+YT_API_pull(video_id = 'JYhUh_YYY9s')[1], YT_API_pull(video_id = 'uP7AI6rha9E')[1], YT_API_pull(video_id = 's_gEqgBbw9k')[1], 
+YT_API_pull(video_id = 'iWEh8bqvseE')[1], YT_API_pull(video_id = '37RlofthNdM')[1], YT_API_pull(video_id = 'Phu6sGsK0g8')[1], 
+YT_API_pull(video_id = 'iWrB-rhGAoo')[1], YT_API_pull(video_id = 'tuRYYn7ncZM')[1], YT_API_pull(video_id = 'zn18jg3B_CA')[1], 
+YT_API_pull(video_id = 'bFMoUeXpFVg')[1], YT_API_pull(video_id = 'UK8BMltgpFI')[1], YT_API_pull(video_id = 'Ci_neJGO0gY')[1], 
+YT_API_pull(video_id = 'rZbxPjyKbzE')[1], YT_API_pull(video_id = '504U7TOHSwA')[1], YT_API_pull(video_id = '0lIkg6AibMs')[1], 
+YT_API_pull(video_id = '6DpoONQCt9g')[1], YT_API_pull(video_id = '_kmAOOWq4U8')[1], YT_API_pull(video_id = 'PKoQNxlTFnY')[1],
+YT_API_pull(video_id = 'cxp_uGBDcaU')[1], YT_API_pull(video_id = 'ONFw_-NF1jg')[1], YT_API_pull(video_id = 'HQBmqCZyRUI')[1],
+YT_API_pull(video_id = 'Siruz9slidg')[1], YT_API_pull(video_id = 'VA-e46Ze2ZE')[1], YT_API_pull(video_id = 'FdKyOyYpWHI')[1],
+YT_API_pull(video_id = '1K0HZj0Yyhw')[1]]
 
-# create traces
-trace0 = go.Scatter(
-    x = x_values,
-    y = y1_values,
-    mode = 'lines',
-    marker = {'color': color1},
-    name = name1
-)
-trace1 = go.Scatter(
-    x = x_values,
-    y = y2_values,
-    mode = 'lines',
-    marker = {'color': color2},
-    name = name2
-)
-trace2 = go.Scatter(
-    x = x_values,
-    y = y3_values,
-    mode = 'lines',
-    marker = {'color': color3},
-    name = name3
-)
-
-# assign traces to data
-data = [trace0, trace1, trace2]
-layout = go.Layout(
-    title = mytitle
-)
 
 # Generate the figure dictionary
-fig = go.Figure(data=data,layout=layout)
-
+#fig = go.Figure(data=data,layout=layout)
+fig = go.Figure([go.Bar(x=lect_no, y = view_ct)])
 ########### Initiate the app
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 app = dash.Dash(__name__, external_stylesheets=external_stylesheets)
